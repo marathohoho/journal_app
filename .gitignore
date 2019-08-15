@@ -1,6 +1,6 @@
 #API keys and other stuff
 functions/utilities/myFirebaseConfiguration.js
-
+functions/utilities/test.js
 # Logs
 logs
 *.log
