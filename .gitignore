@@ -1,5 +1,5 @@
 #API keys and other stuff
-functions/utilities/FirebaseConfiguration.js
+functions/utilities/myFirebaseConfiguration.js
 
 # Logs
 logs
