@@ -20,16 +20,27 @@ const signUp = (req, res) => {
      * Errors : object with errors
      */
 
-    // const { valid, errors } = validateSignupData(newUser);
+    const { valid, errors } = validateSignupData(newUser);
 
-    // if(!valid) return res.status(400).json(errors);
+    if(!valid) return res.status (400).json(errors);
 
     /** create a new user - validation has been passed */
     firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
         .then(data => {
-            console.log(Object.values(data));
-            return res.status(201).json(newUser);
-
+            userId = data.user.uid;
+            return data.user.getIdToken();
+        })
+        .then(JWT_token => {
+            token = JWT_token;
+            const userCredentials = {
+                handle : newUser.handle,
+                email : newUser.email,
+                createdAt : new Date().toISOString()
+            }
+            return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+        })
+        .then(() => {
+            return res.status(201).json({token});
         })
         .catch(err =>{
             console.log(err);
