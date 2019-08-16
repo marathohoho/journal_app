@@ -33,6 +33,7 @@ const signUp = (req, res) => {
             token = JWT_token;
             const userCredentials = {
                 handle : newUser.handle,
+                userId : userId, //could do just userId..
                 email : newUser.email,
                 createdAt : new Date().toISOString()
             }
@@ -74,6 +75,10 @@ const login = (req, res) => {
 }
 
 
+// const test = (req,res) => {
+//     console.log(req)
+//     console.log(req.data())
+// }
 module.exports = {
     signUp,
     login

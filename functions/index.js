@@ -1,7 +1,7 @@
 /** general imports */
 const functions = require('firebase-functions');
 const app = require('express')();
-const FirebaseAuthentication = require('./utilities/FirebaseAuthentication')
+const {FirebaseAuthenticationMiddleware} = require('./utilities/FirebaseAuthentication')
 
 /** import the routes for notes */
 const {
@@ -14,12 +14,15 @@ const {
     signUp,
     login
 } = require('./handlers/users')
+// const {test} = require('./handlers/users');
 
 
 
 /** API Routes for Notes */
 app.get('/notes', getAllNotes);
-// app.post('/note', FirebaseAuthentication, postOneNote);
+app.post('/note', FirebaseAuthenticationMiddleware, postOneNote)
+// app.post('/test', FirebaseAuthenticationMiddleware, test)
+
 
 /** API Routes for Users */
 app.post('/signup', signUp);
