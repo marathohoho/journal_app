@@ -11,7 +11,8 @@ const {
 
 /** import the routes for user */
 const {
-    signUp
+    signUp,
+    login
 } = require('./handlers/users')
 
 
@@ -22,6 +23,7 @@ app.get('/notes', getAllNotes);
 
 /** API Routes for Users */
 app.post('/signup', signUp);
+app.post('/login', login);
 
 
 /** Firebase functions that serve the application */

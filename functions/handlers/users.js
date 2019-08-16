@@ -1,8 +1,7 @@
 const firebase = require('firebase');
 const {db, adming} = require('../utilities/admin')
-const { validateSignupData } = require('../utilities/dataValidator')
+const { validateSignupData, validateLoginData } = require('../utilities/dataValidator')
 const myFirebaseConfiguration = require('../utilities/myFirebaseConfiguration');
-
 
 firebase.initializeApp(myFirebaseConfiguration);
 
@@ -22,7 +21,7 @@ const signUp = (req, res) => {
 
     const { valid, errors } = validateSignupData(newUser);
 
-    if(!valid) return res.status (400).json(errors);
+    if(!valid) return res.status(400).json(errors);
 
     /** create a new user - validation has been passed */
     firebase.auth().createUserWithEmailAndPassword(newUser.email, newUser.password)
@@ -51,7 +50,31 @@ const signUp = (req, res) => {
         })
 }
 
+const login = (req, res) => {
+    const enteredUser = {
+        email : req.body.email,
+        password : req.body.password
+    }
+
+    const  { valid, errors } = validateLoginData(enteredUser);
+
+    if(!valid) return res.status(400).json(errors);
+
+    /** check the entered data with the authentication service */
+    firebase.auth().signInWithEmailAndPassword(enteredUser.email, enteredUser.password)
+        .then(data => {
+            return data.user.getIdToken();
+        })
+        .then(JWT_token =>{
+            return res.json({JWT_token});
+        })
+        .catch(err => {
+            return res.status(403).json({ general : 'Wrong credentials, please try again'})
+        })
+}
+
 
 module.exports = {
-    signUp
+    signUp,
+    login
 }

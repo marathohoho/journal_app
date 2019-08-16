@@ -16,12 +16,12 @@ const validateSignupData = (dataToValidate) => {
     let errors = {};
 
     if (isEmpty(dataToValidate.email)) 
-        errors.email = 'Must not be empty'
+        errors.email = 'Please, enter you email'
     else if(!isEmailFormat(dataToValidate.email))
-        errors.email = 'Must be a valid email'
+        errors.email = 'Please, enter a valid email'
     
     if (isEmpty(dataToValidate.password))
-        errors.password = 'Must not be empty'
+        errors.password = 'Please, enter your password'
     if (dataToValidate.password != dataToValidate.confirmPassword)
         errors.confirmPassword = 'Passwords must match'
     
@@ -34,6 +34,20 @@ const validateSignupData = (dataToValidate) => {
     }
 }
 
+const validateLoginData = (dataToValidate) => {
+    let errors = {};
+
+    if(isEmpty(dataToValidate.email))
+        errors.email = 'Please, enter your email'
+    if(isEmpty(dataToValidate.password))
+        errors.password = 'Please, enter your password'
+    return {
+        errors,
+        valid : Object.keys(errors).length === 0 ? true : false
+    }
+}
+
 module.exports = {
-    validateSignupData
+    validateSignupData,
+    validateLoginData
 }
