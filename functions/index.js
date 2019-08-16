@@ -6,7 +6,9 @@ const {FirebaseAuthenticationMiddleware} = require('./utilities/FirebaseAuthenti
 /** import the routes for notes */
 const {
     getAllNotes,
-    postOneNote
+    postOneNote,
+    deleteOneNote,
+    updateOneNote
 } = require('./handlers/notes')
 
 /** import the routes for user */
@@ -19,8 +21,10 @@ const {
 
 
 /** API Routes for Notes */
-app.get('/notes', getAllNotes);
+app.get('/notes', FirebaseAuthenticationMiddleware, getAllNotes);
 app.post('/note', FirebaseAuthenticationMiddleware, postOneNote)
+app.delete('/notes/:noteId', FirebaseAuthenticationMiddleware, deleteOneNote)
+app.put('/notes/:noteId', FirebaseAuthenticationMiddleware, updateOneNote)
 // app.post('/test', FirebaseAuthenticationMiddleware, test)
 
 
