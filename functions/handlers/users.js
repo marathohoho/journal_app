@@ -37,7 +37,7 @@ const signUp = (req, res) => {
                 email : newUser.email,
                 createdAt : new Date().toISOString()
             }
-            return db.doc(`/users/${newUser.handle}`).set(userCredentials);
+            return db.doc(`/users/${newUser.handle+userId}`).set(userCredentials);
         })
         .then(() => {
             return res.status(201).json({token});
@@ -46,6 +46,8 @@ const signUp = (req, res) => {
             console.log(err);
             if(err.code === 'auth/email-already-in-use')
                 return res.status(400).json({email: 'Email is alreay in use..'})
+            else if (err.code === 'auth/weak-password')
+                return res.status(500).json({password: 'You password is not strong enough'});
             else
                 return res.status(500).json({general: 'Something we wrong. Please try again..'})
         })
@@ -66,8 +68,8 @@ const login = (req, res) => {
         .then(data => {
             return data.user.getIdToken();
         })
-        .then(JWT_token =>{
-            return res.json({JWT_token});
+        .then(token =>{
+            return res.json({token});
         })
         .catch(err => {
             return res.status(403).json({ general : 'Wrong credentials, please try again'})
