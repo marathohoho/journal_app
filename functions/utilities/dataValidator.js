@@ -4,9 +4,9 @@ const isEmailFormat = (email2check) => {
     return email2check.match(regEx);
 }
 
-const isEmpty = (email2check) => {
+const isEmpty = dataToCheck => {
     /** delete the leading and ending space */
-    if(email2check.trim() === '')
+    if(dataToCheck.trim() === '')
         return true;
     else 
         return false;
@@ -47,7 +47,25 @@ const validateLoginData = (dataToValidate) => {
     }
 }
 
+
+const validateNoteData = dataToValidate => {
+    let errors = {};
+
+    if(isEmpty(dataToValidate.title)) {
+        errors.title = 'Your note needs a title!'
+    }
+    if(isEmpty(dataToValidate.body)) {
+        errors.body = 'Note cannot be empty!'
+    }
+
+    return {
+        errors,
+        valid : Object.keys(errors).length === 0 ? true : false
+    }
+
+}
 module.exports = {
     validateSignupData,
-    validateLoginData
+    validateLoginData,
+    validateNoteData
 }

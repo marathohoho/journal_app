@@ -21,7 +21,7 @@ const FirebaseAuthenticationMiddleware = (req, res, next) => {
         })
         .then(userFound => {
             /** "pass" the parameters with the next() */
-            req.user.handle = userFound.docs[0].data().handle;
+            req.user.handleId = userFound.docs[0].data().userId;
             return next();
         })
         .catch(err => {

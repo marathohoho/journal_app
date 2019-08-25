@@ -37,7 +37,7 @@ const signUp = (req, res) => {
                 email : newUser.email,
                 createdAt : new Date().toISOString()
             }
-            return db.doc(`/users/${newUser.handle+userId}`).set(userCredentials);
+            return db.doc(`/users/${userId}`).set(userCredentials);
         })
         .then(() => {
             return res.status(201).json({token});

@@ -3,6 +3,9 @@ const functions = require('firebase-functions');
 const app = require('express')();
 const {FirebaseAuthenticationMiddleware} = require('./utilities/FirebaseAuthentication')
 
+const cors = require('cors');
+app.use(cors());
+
 /** import the routes for notes */
 const {
     getAllNotes,

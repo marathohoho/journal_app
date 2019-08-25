@@ -1,7 +1,9 @@
 const {db, admin, FieldValue} = require('../utilities/admin');
+const { validateNoteData } = require('../utilities/dataValidator');
 
 const getAllNotes = (req, res) => {
     db.collection('notes')
+        .where("userHandleId", "==", req.user.handleId)
         .orderBy('createdAt', 'desc')
         .get()
         .then(noteCollection => {
@@ -9,6 +11,7 @@ const getAllNotes = (req, res) => {
             noteCollection.forEach(doc => {
                 notes.push({
                     noteId: doc.id,
+                    title: doc.data().title,
                     body: doc.data().body,
                     userHandle : doc.data().userHandle,
                     createdAt : doc.data().createdAt
@@ -18,21 +21,26 @@ const getAllNotes = (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            res.status(500).json({errros : err.code});
+            res.status(500).json({errors : err.code});
         })
 }
 
 const postOneNote = (req, res) => {
     /** req.user.handle contains the handle */
-    if (req.body.body.trim() === '')
-        return res.status(400).json({ body : 'Your note must not be empty'});
+    // if (req.body.body.trim() === '')
+    //     return res.status(400).json({ body : 'Your note must not be empty'});
     
     const newNote = {
+        title: req.body.title,
         body: req.body.body,
-        userHandle : req.user.handle,
+        userHandleId : req.user.handleId,
         createdAt : new Date().toISOString()
     };
 
+    const { valid, errors } = validateNoteData(newNote);
+
+    if(!valid) return res.status(400).json(errors);
+    
     db.collection('notes')
         .add(newNote)
         .then(addedNote => {
@@ -40,7 +48,7 @@ const postOneNote = (req, res) => {
         })
         .catch(err => {
             console.log(err);
-            return res.status(500).json({error: 'something went wrong'})
+            return res.status(500).json({errors: 'something went wrong'})
         })
 }
 
@@ -50,7 +58,7 @@ const deleteOneNote = (req, res) => {
     noteDocument.get()
         .then(noteToDelete => {
             if(!noteToDelete.exists)
-                return res.status(400).json({error : 'Note not found'})
+                return res.status(400).json({errors : 'Note not found'})
             else
                 return noteDocument.delete();
         })
@@ -59,7 +67,7 @@ const deleteOneNote = (req, res) => {
         })
         .catch(err => { 
             console.log(err);
-            return res.status(500).json({error: err.code});
+            return res.status(500).json({errors: err.code});
 
         })
 }
@@ -74,7 +82,7 @@ const updateOneNote = (req, res) => {
     editNoteDocument.get()
         .then(noteToEdit => {
             if(!noteToEdit.exists)
-                return res.status(400).json({ error: "Note to edit not found"})
+                return res.status(400).json({ errors: "Note to edit not found"})
             else 
                 editNoteDocument.update({ 
                     body : req.body.body,
@@ -85,7 +93,7 @@ const updateOneNote = (req, res) => {
         })
         .catch(err =>{
             console.log(err);
-            return res.status(500).json({ error : err.code });
+            return res.status(500).json({ errors : err.code });
         })
 }
 module.exports = {
