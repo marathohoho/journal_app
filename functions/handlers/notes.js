@@ -25,6 +25,25 @@ const getAllNotes = (req, res) => {
         })
 }
 
+const getOneNote = (req, res) => {
+    let noteData = {};
+
+    db
+        .doc(`notes/${req.params.noteId}`)
+        .get()
+        .then(showOneNote => {
+            if(!showOneNote.exists){
+                return res.status(404).json({ errors : 'Note not found'});
+            }
+            noteData = showOneNote.data();
+            noteData.noteId = showOneNote.id;
+            return res.json(noteData);
+        })
+        .catch(err => {
+            return res.status(500).json({errors : err.code });
+        })
+}
+
 const postOneNote = (req, res) => {
     /** req.user.handle contains the handle */
     // if (req.body.body.trim() === '')
@@ -77,6 +96,7 @@ const updateOneNote = (req, res) => {
                 return res.status(400).json({ errors: "Note to edit not found"})
             else 
                 editNoteDocument.update({ 
+                    noteId: req.params.noteId,
                     title : req.body.title,
                     body : req.body.body,
                     editedAt : new Date().toISOString()
@@ -120,5 +140,6 @@ module.exports = {
     getAllNotes,
     postOneNote,
     deleteOneNote,
-    updateOneNote
+    updateOneNote,
+    getOneNote
 }
