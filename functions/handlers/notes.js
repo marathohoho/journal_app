@@ -43,12 +43,56 @@ const postOneNote = (req, res) => {
     
     db.collection('notes')
         .add(newNote)
-        .then(addedNote => {
-            return res.status(200).json({ message : `document ${addedNote.id} was created successfully`})
+        .then((addedNote) => {
+            return res.status(200).json({
+                noteId: addedNote.id,
+                title : req.body.title,
+                body: req.body.body,
+                userHandleId : req.user.handleId,
+                createdAt : new Date().toISOString()
+            });
         })
         .catch(err => {
             console.log(err);
             return res.status(500).json({errors: 'something went wrong'})
+        })
+}
+
+const updateOneNote = (req, res) => {
+
+    const noteToCheckBeforeEditing = {
+        title : req.body.title,
+        body : req.body.body,
+    }
+
+    const { valid, errors } = validateNoteData(noteToCheckBeforeEditing);
+
+    if(!valid) return res.status(400).json(errors);
+    
+    let editNoteDocument = db.doc(`/notes/${req.params.noteId}`);
+
+    editNoteDocument.get()
+        .then(noteToEdit => {
+            if(!noteToEdit.exists)
+                return res.status(400).json({ errors: "Note to edit not found"})
+            else 
+                editNoteDocument.update({ 
+                    title : req.body.title,
+                    body : req.body.body,
+                    editedAt : new Date().toISOString()
+                });
+
+                return res.status(200).json({ 
+                    noteId: req.params.noteId,
+                    title : req.body.title,
+                    body: req.body.body,
+                    userHandleId : req.user.handleId,
+                    editedAt : new Date().toISOString()
+                })
+        })
+        .catch(err =>{
+            console.log(err);
+            return res.status(500).json({ errors : err.code });
         })
 }
 
@@ -72,30 +116,6 @@ const deleteOneNote = (req, res) => {
         })
 }
 
-const updateOneNote = (req, res) => {
-    if (req.body.body.trim() === '')
-        return res.status(400).json({ body : 'Your edited note must not be empty'});
-    
-    let editNoteDocument = db.doc(`/notes/${req.params.noteId}`);
-
-
-    editNoteDocument.get()
-        .then(noteToEdit => {
-            if(!noteToEdit.exists)
-                return res.status(400).json({ errors: "Note to edit not found"})
-            else 
-                editNoteDocument.update({ 
-                    body : req.body.body,
-                    editedAt : new Date().toISOString()
-                });
-
-                return res.status(200).json({ message : `document ${noteToEdit.id} was edited`})
-        })
-        .catch(err =>{
-            console.log(err);
-            return res.status(500).json({ errors : err.code });
-        })
-}
 module.exports = {
     getAllNotes,
     postOneNote,
