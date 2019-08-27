@@ -14,7 +14,8 @@ const getAllNotes = (req, res) => {
                     title: doc.data().title,
                     body: doc.data().body,
                     userHandle : doc.data().userHandle,
-                    createdAt : doc.data().createdAt
+                    createdAt : doc.data().createdAt,
+                    editedAt : doc.data().editedAt ? doc.data().editedAt : null
                 });
             });
             return res.json(notes);
@@ -85,7 +86,7 @@ const updateOneNote = (req, res) => {
     }
 
     const { valid, errors } = validateNoteData(noteToCheckBeforeEditing);
-
+    console.log(errors)
     if(!valid) return res.status(400).json(errors);
     
     let editNoteDocument = db.doc(`/notes/${req.params.noteId}`);
